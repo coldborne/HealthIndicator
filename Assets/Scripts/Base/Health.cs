@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class Health : MonoBehaviour, IDamageable, IMedicinable
 {
-    public readonly int MinValue = 0;
-    public readonly int MaxValue = 100;
+    private readonly int _minValue = 0;
+    private readonly int _maxValue = 100;
 
     public event Action Died;
     public event Action<int> ValueChanged;
 
     private void Awake()
     {
-        Value = MaxValue;
+        Value = _maxValue;
         ValueChanged?.Invoke(Value);
     }
     
+    public int MinValue => _minValue;
+    public int MaxValue => _maxValue;
     public int Value { get; private set; }
 
     public void TakeDamage(int amount)
@@ -27,13 +29,13 @@ public class Health : MonoBehaviour, IDamageable, IMedicinable
 
         int newValue = Value - amount;
         
-        if (newValue > MinValue)
+        if (newValue > _minValue)
         {
             Value = newValue;
         }
         else
         {
-            Value = MinValue;
+            Value = _minValue;
             Died?.Invoke();
         }
         
@@ -42,14 +44,14 @@ public class Health : MonoBehaviour, IDamageable, IMedicinable
 
     public void Treat(int amount)
     {
-        if (amount <= MinValue)
+        if (amount <= _minValue)
         {
             throw new ArgumentOutOfRangeException("amount must be greater than zero");
         }
 
         int newValue = Value + amount;
 
-        Value = newValue < MaxValue ? newValue : MaxValue;
+        Value = newValue < _maxValue ? newValue : _maxValue;
         
         ValueChanged?.Invoke(Value);
     }
