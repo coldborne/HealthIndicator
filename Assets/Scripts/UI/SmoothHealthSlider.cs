@@ -3,58 +3,40 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Slider))]
-public class SmoothHealthSlider : MonoBehaviour
+public class SmoothHealthSlider : HealthSlider
 {
-    [SerializeField] private Health _health;
     [SerializeField] private float _speed;
 
-    private Slider _slider;
     private Coroutine _changingValueCoroutine;
 
-    private void Awake()
+    protected override void OnDisable()
     {
-        _slider = GetComponent<Slider>();
+        base.OnDisable();
         
-        _slider.interactable = false;
-        _slider.minValue = _health.MinValue;
-        _slider.maxValue = _health.MaxValue;
-
-        _slider.value = _health.Value;
-    }
-
-    private void OnEnable()
-    {
-        _health.ValueChanged += Display;
-    }
-
-    private void OnDisable()
-    {
-        _health.ValueChanged -= Display;
-
         StopAllCoroutines();
-        
+
         _changingValueCoroutine = null;
     }
 
-    private void Display(int value)
+    protected override void Display(Slider slider, int value)
     {
         if (_changingValueCoroutine != null)
         {
             StopCoroutine(_changingValueCoroutine);
         }
 
-        _changingValueCoroutine = StartCoroutine(ChangingValue(value));
+        _changingValueCoroutine = StartCoroutine(ChangingValue(slider, value));
     }
 
-    private IEnumerator ChangingValue(float targetValue)
+    private IEnumerator ChangingValue(Slider slider, float targetValue)
     {
-        while (Mathf.Approximately(_slider.value, targetValue) == false)
+        while (Mathf.Approximately(slider.value, targetValue) == false)
         {
-            _slider.value = Mathf.MoveTowards(_slider.value, targetValue, _speed * Time.unscaledDeltaTime);
+            slider.value = Mathf.MoveTowards(slider.value, targetValue, _speed * Time.unscaledDeltaTime);
             yield return null;
         }
 
-        _slider.value = targetValue;
+        slider.value = targetValue;
         _changingValueCoroutine = null;
     }
 }
