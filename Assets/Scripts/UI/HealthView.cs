@@ -1,31 +1,22 @@
-using TMPro;
 using UnityEngine;
 
-public class HealthView : MonoBehaviour
+public abstract class HealthView : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _healthText;
-    [SerializeField] private TextMeshProUGUI _maxHealthText;
-    
     [SerializeField] private Health _health;
 
-    private void Start()
-    {
-        _healthText.text = _health.Value.ToString();
-        _maxHealthText.text = _health.MaxValue.ToString();
-    }
+    protected int MinHealthValue => _health.MinValue;
+    protected int MaxHealthValue => _health.MaxValue;
+    protected int HealthValue => _health.Value;
 
     private void OnEnable()
     {
-        _health.ValueChanged += Display;
+        _health.ValueChanged += DoAction;
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
-        _health.ValueChanged -= Display;
+        _health.ValueChanged -= DoAction;
     }
 
-    public void Display(int value)
-    {
-        _healthText.text = value.ToString();
-    }
+    protected abstract void DoAction(int value);
 }
