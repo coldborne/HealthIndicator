@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Slider))]
 public class SmoothHealthSlider : HealthSlider
 {
-    [SerializeField] private float _speed;
+    [SerializeField] private float _durationTime;
 
     private Coroutine _changingValueCoroutine;
 
@@ -30,9 +30,17 @@ public class SmoothHealthSlider : HealthSlider
 
     private IEnumerator ChangingValue(Slider slider, float targetValue)
     {
-        while (Mathf.Approximately(slider.value, targetValue) == false)
+        float startValue = slider.value;
+        float elapsedTime = 0f;
+
+        float progress;
+        
+        while (elapsedTime < _durationTime)
         {
-            slider.value = Mathf.MoveTowards(slider.value, targetValue, _speed * Time.unscaledDeltaTime);
+            elapsedTime += Time.unscaledDeltaTime;
+            
+            progress = Mathf.Clamp01(elapsedTime / _durationTime);
+            slider.value = Mathf.Lerp(startValue, targetValue, progress);
             yield return null;
         }
 

@@ -16,7 +16,7 @@ public abstract class HealthSlider : MonoBehaviour
         _slider.minValue = _health.MinValue;
         _slider.maxValue = _health.MaxValue;
         
-        DoAction(_health.Value);
+        _slider.value = _health.Value;
     }
 
     protected virtual void OnEnable()
